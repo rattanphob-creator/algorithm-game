@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CODE LAB - ภารกิจนักคิด</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:"Segoe UI",Tahoma,sans-serif;
+    background:linear-gradient(135deg,#dff6ff,#eef1ff);
+    min-height:100vh;
+    color:#172033;
+}
+
+header{
+    background:linear-gradient(90deg,#263b80,#4969d8);
+    color:white;
+    padding:18px 28px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 5px 15px #0002;
+}
+
+.logo{
+    font-size:24px;
+    font-weight:800;
+}
+
+.mission{
+    font-size:14px;
+    opacity:.9;
+}
+
+.container{
+    max-width:1400px;
+    margin:auto;
+    padding:20px;
+}
+
+.top-info{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:15px;
+    margin-bottom:18px;
+}
+
+.info{
+    background:white;
+    border-radius:16px;
+    padding:15px;
+    box-shadow:0 5px 15px #0001;
+}
+
+.info b{
+    display:block;
+    margin-bottom:5px;
+}
+
+.game-area{
+    display:grid;
+    grid-template-columns:1.5fr 1fr;
+    gap:18px;
+}
+
+.panel{
+    background:white;
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 8px 20px #0002;
+}
+
+.panel-title{
+    font-size:20px;
+    font-weight:800;
+    margin-bottom:15px;
+}
+
+/* สนาม */
+.world{
+    position:relative;
+    height:430px;
+    overflow:hidden;
+    border-radius:18px;
+    background:
+        linear-gradient(#9edcff 0 48%,#78c86d 48% 100%);
+    border:5px solid #344b94;
+}
+
+.sun{
+    position:absolute;
+    width:65px;
+    height:65px;
+    background:#ffd84d;
+    border-radius:50%;
+    right:40px;
+    top:25px;
+    box-shadow:0 0 25px #ffd84d;
+}
+
+.cloud{
+    position:absolute;
+    font-size:45px;
+    opacity:.85;
+}
+
+.cloud1{top:30px;left:50px}
+.cloud2{top:80px;left:270px}
+
+.school{
+    position:absolute;
+    left:25px;
+    top:115px;
+    font-size:80px;
+}
+
+.school-label{
+    position:absolute;
+    left:20px;
+    top:200px;
+    background:white;
+    padding:7px 12px;
+    border-radius:10px;
+    font-weight:bold;
+}
+
+.field{
+    position:absolute;
+    left:14%;
+    right:9%;
+    bottom:35px;
+    height:175px;
+    border:6px solid white;
+    border-radius:12px;
+    background:#63bd63;
+}
+
+.field-label{
+    position:absolute;
+    top:10px;
+    left:50%;
+    transform:translateX(-50%);
+    background:white;
+    padding:8px 15px;
+    border-radius:10px;
+    font-weight:800;
+}
+
+.start{
+    position:absolute;
+    left:20px;
+    bottom:10px;
+    font-size:14px;
+    font-weight:bold;
+}
+
+.finish{
+    position:absolute;
+    right:15px;
+    bottom:10px;
+    font-size:32px;
+    z-index:3;
+}
+
+.robot{
+    position:absolute;
+    left:11%;
+    bottom:70px;
+    font-size:50px;
+    z-index:5;
+    transition:left 1s linear,bottom 1s linear,transform .4s;
+}
+
+.robot.run{
+    animation:robotBounce .35s infinite alternate;
+}
+
+@keyframes robotBounce{
+    from{transform:translateY(0)}
+    to{transform:translateY(-8px)}
+}
+
+.path{
+    position:absolute;
+    left:12%;
+    right:8%;
+    bottom:92px;
+    height:7px;
+    background:repeating-linear-gradient(
+        90deg,
+        white 0 20px,
+        transparent 20px 35px
+    );
+    opacity:.8;
+}
+
+/* Code */
+.code-zone{
+    min-height:210px;
+    border:3px dashed #9ba9dc;
+    border-radius:15px;
+    padding:12px;
+    background:#f7f8ff;
+}
+
+.code-block{
+    padding:13px;
+    margin-bottom:9px;
+    border-radius:10px;
+    background:#fff;
+    border:2px solid #d4d9ef;
+    cursor:grab;
+    font-weight:700;
+    transition:.2s;
+}
+
+.code-block:hover{
+    transform:translateX(5px);
+    border-color:#4d6fe3;
+}
+
+.code-block.selected{
+    background:#e8edff;
+    border-color:#4d6fe3;
+}
+
+.command-list{
+    margin-top:15px;
+}
+
+.command{
+    padding:12px;
+    background:#f0f3ff;
+    border:2px solid #cbd3ef;
+    border-radius:10px;
+    margin-bottom:8px;
+    cursor:pointer;
+}
+
+.command:hover{
+    background:#dfe6ff;
+}
+
+.controls{
+    display:flex;
+    gap:10px;
+    margin-top:15px;
+    flex-wrap:wrap;
+}
+
+button{
+    border:0;
+    border-radius:10px;
+    padding:12px 20px;
+    font-weight:800;
+    cursor:pointer;
+    font-size:15px;
+}
+
+.run-btn{
+    background:#35b86b;
+    color:white;
+}
+
+.debug-btn{
+    background:#ffad35;
+    color:white;
+}
+
+.reset-btn{
+    background:#687083;
+    color:white;
+}
+
+button:hover{
+    transform:translateY(-2px);
+}
+
+.thinking{
+    background:#f7f8ff;
+    border-radius:15px;
+    padding:15px;
+}
+
+.question{
+    margin-bottom:12px;
+    padding:12px;
+    border-left:5px solid #526bd8;
+    background:white;
+    border-radius:8px;
+}
+
+.terminal{
+    margin-top:15px;
+    background:#111827;
+    color:#73ff9a;
+    border-radius:12px;
+    padding:15px;
+    font-family:monospace;
+    min-height:110px;
+    white-space:pre-line;
+}
+
+.result{
+    margin-top:15px;
+    padding:15px;
+    border-radius:12px;
+    display:none;
+    font-weight:700;
+}
+
+.success{
+    background:#d8f8e5;
+    color:#08743b;
+    display:block;
+}
+
+.error{
+    background:#ffe1e1;
+    color:#a32121;
+    display:block;
+}
+
+.score{
+    font-size:20px;
+    font-weight:800;
+    color:#3857c8;
+}
+
+.finish-message{
+    position:absolute;
+    inset:0;
+    display:none;
+    justify-content:center;
+    align-items:center;
+    background:#0008;
+    z-index:20;
+}
+
+.finish-card{
+    background:white;
+    padding:35px;
+    border-radius:25px;
+    text-align:center;
+    animation:pop .5s;
+}
+
+@keyframes pop{
+    from{transform:scale(.5);opacity:0}
+    to{transform:scale(1);opacity:1}
+}
+
+.finish-card h2{
+    font-size:32px;
+    color:#1e9c55;
+    margin-bottom:10px;
+}
+
+.trophy{
+    font-size:70px;
+}
+
+@media(max-width:900px){
+    .game-area{
+        grid-template-columns:1fr;
+    }
+
+    .top-info{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">🤖 CODE LAB</div>
+    <div class="mission">ภารกิจนักคิด : สร้างโปรแกรมคำนวณพื้นที่สนาม</div>
+</header>
+
+<div class="container">
+
+    <div class="top-info">
+
+        <div class="info">
+            <b>🎯 เป้าหมาย</b>
+            ออกแบบขั้นตอนการทำงานให้ถูกต้อง
+        </div>
+
+        <div class="info">
+            <b>📐 ข้อมูลโจทย์</b>
+            ความกว้าง = 6 เมตร | ความยาว = 10 เมตร
+        </div>
+
+        <div class="info">
+            <b>⭐ คะแนน</b>
+            <span class="score" id="score">0 / 100</span>
+        </div>
+
+    </div>
+
+
+    <div class="game-area">
+
+        <!-- โลกจำลอง -->
+        <div class="panel">
+
+            <div class="panel-title">
+                🏫 ภารกิจที่ 1 : พาหุ่นยนต์ไปยังเส้นชัย
+            </div>
+
+            <div class="world" id="world">
+
+                <div class="sun">☀️</div>
+
+                <div class="cloud cloud1">☁️</div>
+                <div class="cloud cloud2">☁️</div>
+
+                <div class="school">🏫</div>
+                <div class="school-label">โรงเรียน CODE LAB</div>
+
+                <div class="field">
+                    <div class="field-label">
+                        🟩 สนามโรงเรียน
+                    </div>
+                </div>
+
+                <div class="path"></div>
+
+                <div class="start">
+                    START
+                </div>
+
+                <div class="finish">
+                    🏁
+                </div>
+
+                <div class="robot" id="robot">
+                    🤖
+                </div>
+
+                <div class="finish-message" id="finishMessage">
+                    <div class="finish-card">
+                        <div class="trophy">🏆</div>
+                        <h2>ภารกิจสำเร็จ!</h2>
+                        <p>หุ่นยนต์เดินทางถึงเส้นชัยแล้ว</p>
+                        <p>นักเรียนออกแบบโปรแกรมได้ถูกต้อง 🎉</p>
+                        <br>
+                        <button class="run-btn" onclick="closeMessage()">
+                            เล่นต่อ
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Code Lab -->
+        <div class="panel">
+
+            <div class="panel-title">
+                💻 Code Designer
+            </div>
+
+            <p>
+                เลือกคำสั่งด้านล่างเพื่อสร้างโปรแกรม
+            </p>
+
+            <div class="command-list">
+
+                <div class="command" onclick="addCommand('รับค่าความกว้าง')">
+                    📥 รับค่าความกว้าง
+                </div>
+
+                <div class="command" onclick="addCommand('รับค่าความยาว')">
+                    📥 รับค่าความยาว
+                </div>
+
+                <div class="command" onclick="addCommand('คำนวณพื้นที่ = กว้าง × ยาว')">
+                    ⚙️ คำนวณพื้นที่ = กว้าง × ยาว
+                </div>
+
+                <div class="command" onclick="addCommand('แสดงผลพื้นที่')">
+                    📤 แสดงผลพื้นที่
+                </div>
+
+            </div>
+
+            <h3 style="margin:15px 0 8px">
+                🧩 โปรแกรมของฉัน
+            </h3>
+
+            <div class="code-zone" id="codeZone">
+                <p style="color:#7b849b">
+                    คลิกคำสั่งด้านบนเพื่อเพิ่มคำสั่ง
+                </p>
+            </div>
+
+            <div class="controls">
+
+                <button class="run-btn" onclick="runCode()">
+                    ▶ RUN CODE
+                </button>
+
+                <button class="debug-btn" onclick="debugCode()">
+                    🐞 DEBUG
+                </button>
+
+                <button class="reset-btn" onclick="resetGame()">
+                    ↻ RESET
+                </button>
+
+            </div>
+
+            <div class="terminal" id="terminal">
+> CODE LAB Terminal
+> รอคำสั่ง...
+            </div>
+
+            <div id="result" class="result"></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Thinking -->
+    <div class="panel" style="margin-top:18px">
+
+        <div class="panel-title">
+            🧠 Thinking Space
+        </div>
+
+        <div class="thinking">
+
+            <div class="question">
+                🔍 <b>1. วิเคราะห์ปัญหา</b><br>
+                เราต้องการให้โปรแกรมทำอะไร?
+            </div>
+
+            <div class="question">
+                📥 <b>2. Input</b><br>
+                โปรแกรมต้องรับข้อมูลอะไร?
+            </div>
+
+            <div class="question">
+                ⚙️ <b>3. Process</b><br>
+                ต้องนำข้อมูลไปทำอะไร?
+            </div>
+
+            <div class="question">
+                📤 <b>4. Output</b><br>
+                โปรแกรมต้องแสดงผลอะไร?
+            </div>
+
+            <div class="question">
+                🐞 <b>5. Debug</b><br>
+                ถ้าหุ่นยนต์ไปไม่ถึงเส้นชัย แสดงว่าเกิดอะไรขึ้น?
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+let commands = [];
+
+const correctOrder = [
+    "รับค่าความกว้าง",
+    "รับค่าความยาว",
+    "คำนวณพื้นที่ = กว้าง × ยาว",
+    "แสดงผลพื้นที่"
+];
+
+const codeZone = document.getElementById("codeZone");
+const robot = document.getElementById("robot");
+const terminal = document.getElementById("terminal");
+const result = document.getElementById("result");
+const score = document.getElementById("score");
+
+
+function addCommand(command){
+
+    if(commands.length >= 4){
+
+        terminal.innerText =
+`> CODE LAB Terminal
+> โปรแกรมมีคำสั่งครบ 4 ขั้นตอนแล้ว
+> กด RESET หากต้องการเริ่มใหม่`;
+
+        return;
+    }
+
+    commands.push(command);
+
+    renderCommands();
+
+    terminal.innerText =
+`> เพิ่มคำสั่งแล้ว
+> ${command}
+> จำนวนคำสั่ง ${commands.length}/4`;
+}
+
+
+function renderCommands(){
+
+    if(commands.length === 0){
+
+        codeZone.innerHTML =
+        `<p style="color:#7b849b">
+        คลิกคำสั่งด้านบนเพื่อเพิ่มคำสั่ง
+        </p>`;
+
+        return;
+    }
+
+    codeZone.innerHTML = "";
+
+    commands.forEach((cmd,index)=>{
+
+        const div = document.createElement("div");
+
+        div.className = "code-block";
+
+        div.innerHTML =
+        `<b>${index+1}.</b> ${cmd}`;
+
+        codeZone.appendChild(div);
+
+    });
+}
+
+
+function checkCorrect(){
+
+    if(commands.length !== correctOrder.length){
+        return false;
+    }
+
+    for(let i=0;i<correctOrder.length;i++){
+
+        if(commands[i] !== correctOrder[i]){
+            return false;
+        }
+
+    }
+
+    return true;
+}
+
+
+function runCode(){
+
+    result.className = "result";
+    result.innerHTML = "";
+
+    if(commands.length !== 4){
+
+        result.classList.add("error");
+
+        result.innerHTML =
+        "⚠️ โปรแกรมยังไม่สมบูรณ์ ต้องมีคำสั่งครบ 4 ขั้นตอน";
+
+        terminal.innerText =
+`> RUN CODE
+> ERROR
+> ต้องสร้างโปรแกรมให้ครบก่อน`;
+
+        return;
+    }
+
+
+    terminal.innerText =
+`> RUN CODE
+> กำลังตรวจสอบโปรแกรม...
+> วิเคราะห์คำสั่ง...
+> ตรวจสอบลำดับ...
+> กำลังส่งโปรแกรมไปยังหุ่นยนต์...`;
+
+    setTimeout(()=>{
+
+        if(checkCorrect()){
+
+            successRun();
+
+        }else{
+
+            wrongRun();
+
+        }
+
+    },1200);
+
+}
+
+
+function successRun(){
+
+    score.innerText = "100 / 100";
+
+    result.className = "result success";
+
+    result.innerHTML =
+    "✅ โปรแกรมถูกต้อง! หุ่นยนต์กำลังเดินทางไปยังเส้นชัย";
+
+    terminal.innerText =
+`> PROGRAM VALID
+> INPUT : 6 × 10
+> PROCESS : 6 × 10
+> OUTPUT : 60 ตารางเมตร
+> PROGRAM RUNNING...
+> ROBOT MOVING...
+> TARGET : FINISH LINE`;
+
+    moveRobotCorrect();
+
+}
+
+
+function moveRobotCorrect(){
+
+    robot.classList.add("run");
+
+    let position = 11;
+
+    robot.style.left = position + "%";
+
+    setTimeout(()=>{
+
+        robot.style.left = "32%";
+
+    },700);
+
+    setTimeout(()=>{
+
+        robot.style.left = "52%";
+
+    },1400);
+
+    setTimeout(()=>{
+
+        robot.style.left = "72%";
+
+    },2100);
+
+    setTimeout(()=>{
+
+        robot.style.left = "86%";
+
+    },2800);
+
+    setTimeout(()=>{
+
+        robot.classList.remove("run");
+
+        terminal.innerText =
+`> ROBOT ARRIVED
+> TARGET REACHED
+> PROGRAM COMPLETED
+> SUCCESS!`;
+
+        document.getElementById("finishMessage")
+        .style.display = "flex";
+
+    },3900);
+
+}
+
+
+function wrongRun(){
+
+    score.innerText = "30 / 100";
+
+    result.className = "result error";
+
+    result.innerHTML =
+    "❌ โปรแกรมมีข้อผิดพลาด! หุ่นยนต์ไม่สามารถไปถึงเส้นชัยได้";
+
+    terminal.innerText =
+`> RUN CODE
+> ERROR DETECTED
+> ROBOT MOVING...
+> ⚠️ WRONG ROUTE
+> ROBOT STOPPED
+> กรุณากด DEBUG`;
+
+    robot.classList.add("run");
+
+    robot.style.left = "42%";
+
+    setTimeout(()=>{
+
+        robot.classList.remove("run");
+
+        robot.style.transform =
+        "rotate(-12deg)";
+
+    },1500);
+
+}
+
+
+function debugCode(){
+
+    if(commands.length === 0){
+
+        terminal.innerText =
+`> DEBUG
+> ยังไม่มีโปรแกรมให้ตรวจสอบ`;
+
+        return;
+    }
+
+
+    let errors = [];
+
+    for(let i=0;i<commands.length;i++){
+
+        if(commands[i] !== correctOrder[i]){
+
+            errors.push(
+            `ขั้นตอนที่ ${i+1} ควรเป็น "${correctOrder[i]}"`
+            );
+
+        }
+
+    }
+
+
+    if(commands.length < 4){
+
+        errors.push("โปรแกรมยังมีคำสั่งไม่ครบ 4 ขั้นตอน");
+
+    }
+
+
+    if(errors.length === 0){
+
+        terminal.innerText =
+`> DEBUG
+> SCANNING...
+> NO ERROR
+> PROGRAM IS CORRECT
+> พร้อมกด RUN CODE`;
+
+        result.className = "result success";
+
+        result.innerHTML =
+        "🔍 ไม่พบข้อผิดพลาด โปรแกรมถูกต้องแล้ว";
+
+    }else{
+
+        terminal.innerText =
+        "> DEBUG\n> พบข้อผิดพลาด:\n" +
+        errors.join("\n");
+
+        result.className = "result error";
+
+        result.innerHTML =
+        "🐞 พบข้อผิดพลาด " + errors.length +
+        " จุด — ลองจัดลำดับคำสั่งใหม่";
+
+    }
+
+}
+
+
+function resetGame(){
+
+    commands = [];
+
+    renderCommands();
+
+    robot.classList.remove("run");
+
+    robot.style.left = "11%";
+
+    robot.style.transform = "none";
+
+    score.innerText = "0 / 100";
+
+    terminal.innerText =
+`> CODE LAB Terminal
+> SYSTEM RESET
+> พร้อมเริ่มภารกิจใหม่`;
+
+    result.className = "result";
+
+    result.innerHTML = "";
+
+    document.getElementById("finishMessage")
+    .style.display = "none";
+
+}
+
+
+function closeMessage(){
+
+    document.getElementById("finishMessage")
+    .style.display = "none";
+
+}
+
+</script>
+
+</body>
+</html>
